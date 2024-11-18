@@ -1,8 +1,6 @@
 import requests
-from typing import Union
-from models.response import PokemonList
+from typing import List, Union
 
-# Diccionario de tipos de Pokémon y sus IDs
 type_to_id = {
     "normal": 1,
     "fighting": 2,
@@ -24,30 +22,46 @@ type_to_id = {
     "fairy": 18
 }
 
-def fetch_pokemon_list() -> Union[dict, str]:
-    url = "https://pokeapi.co/api/v2/pokemon/"
+def get_water_type_url() -> str:
+    type_id = type_to_id.get("water")
+    if not type_id:
+        return ""
+    return f"https://pokeapi.co/api/v2/type/{type_id}"
+
+async def fetch_water_pokemons(water_url: str) -> List[str]:
+    try:
+        response = requests.get(water_url)
+        response.raise_for_status()
+        data = response.json()
+        return [pokemon["pokemon"]["name"] for pokemon in data["pokemon"]]
+    except Exception as e:
+        print(f"Error al obtener Pokémon de tipo agua: {e}")
+        return []
+
+async def fetch_pokemon_by_id(pokemon_id: int) -> Union[str, None]:
+    """Obtiene un Pokémon por su número (ID)."""
+    url = f"https://pokeapi.co/api/v2/pokemon/{pokemon_id}/"
     try:
         response = requests.get(url)
         response.raise_for_status()
-        return response.json()
+        data = response.json()
+        return data["name"]
     except Exception as e:
-        return f"Error con la excepción: {e}"
+        print(f"Error al obtener el Pokémon con ID {pokemon_id}: {e}")
+        return None
 
-def fetch_pokemon_by_type(type_name: str) -> Union[PokemonListResponse, str]:
-    poke_dict = []
-    type_id = type_to_id.get(type_name)
-
+async def fetch_pokemon_by_type(type_name: str) -> List[str]:
+    """Obtiene Pokémon por tipo."""
+    type_id = type_to_id.get(type_name.lower())
     if not type_id:
-        return "Tipo no encontrado"
+        return []
 
     url = f"https://pokeapi.co/api/v2/type/{type_id}"
     try:
         response = requests.get(url)
         response.raise_for_status()
         data = response.json()
-        for pokemon in data['pokemon']:
-            poke = pokemon['pokemon']['name']
-            poke_dict.append(poke)
-        return PokemonListResponse(pokemon_names=poke_dict)
+        return [pokemon["pokemon"]["name"] for pokemon in data["pokemon"]]
     except Exception as e:
-        return f"Error con la excepción: {e}"
+        print(f"Error al obtener Pokémon del tipo {type_name}: {e}")
+        return []

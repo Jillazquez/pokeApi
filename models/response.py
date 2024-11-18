@@ -1,5 +1,5 @@
-from pydantic import BaseModel
 from typing import List
+from pydantic import BaseModel
 
-class Pokemon_List(BaseModel):
-    pokemon_names: List[str]
+class Pokemon(BaseModel):
+    name: str
