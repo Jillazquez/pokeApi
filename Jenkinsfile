@@ -39,7 +39,7 @@ pipeline {
             steps {
                 script {
                     echo 'Running Pytest...'
-                    sh 'pytest tests/'  // Ejecutar pytest
+                    sh '/app/venv/bin/pytest tests'  // Ejecutar pytest
                 }
             }
         }
