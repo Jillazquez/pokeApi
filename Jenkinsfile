@@ -37,9 +37,9 @@ pipeline {
         // 4. Run Tests: Ejecutar los tests en el contenedor
         stage('Run Pytest') {
             steps {
-                script {
-                    echo 'Running Pytest...'
-                    sh 'docker exec -it pokeapi-container /app/venv/bin/pytest tests/'  // Ejecutar pytest
+            script {
+            echo 'Running Pytest...'
+            sh 'docker exec pokeapi-container /app/venv/bin/pytest tests/'
                 }
             }
         }
