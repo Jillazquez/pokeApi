@@ -39,7 +39,7 @@ pipeline {
             steps {
                 script {
                     echo 'Running Pytest...'
-                    sh 'docker exec $CONTAINER_NAME pytest tests/'  // Ejecutar pytest
+                    sh 'pytest tests/'  // Ejecutar pytest
                 }
             }
         }
