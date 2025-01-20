@@ -39,7 +39,7 @@ pipeline {
             steps {
                 script {
                     echo 'Running Pytest...'
-                    sh '/app/venv/bin/pytest tests'  // Ejecutar pytest
+                    sh 'docker exec -it pokeapi-container /app/venv/bin/pytest tests/'  // Ejecutar pytest
                 }
             }
         }
