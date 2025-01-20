@@ -7,9 +7,11 @@ WORKDIR /app
 # Copia los archivos del proyecto al contenedor
 COPY . /app
 
-# Instala las herramientas necesarias para construir dependencias (si es necesario)
+# Instala las herramientas necesarias para crear el entorno virtual y las dependencias
 RUN apt-get update && apt-get install -y \
     build-essential \
+    python3-venv \
+    libpython3-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Crea y activa un entorno virtual para las dependencias
