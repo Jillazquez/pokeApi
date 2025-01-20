@@ -14,17 +14,16 @@ RUN apt-get update && apt-get install -y \
     libpython3-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Crea y activa un entorno virtual para las dependencias
-RUN python -m venv venv
+# Crea el entorno virtual dentro del contenedor
+RUN python -m venv /app/venv
 
-# Activa el entorno virtual y actualiza pip
-RUN . venv/bin/activate && pip install --upgrade pip
-
-# Instala las dependencias del proyecto y Sentry SDK
-RUN . venv/bin/activate && pip install -r requirements.txt && pip install sentry-sdk
+# Usa el entorno virtual para instalar pip, las dependencias del proyecto y Sentry SDK
+RUN /app/venv/bin/pip install --upgrade pip
+RUN /app/venv/bin/pip install -r requirements.txt
+RUN /app/venv/bin/pip install sentry-sdk
 
 # Expone el puerto donde correrá la aplicación
 EXPOSE 8000
 
-# Cambia CMD para garantizar que el entorno virtual se active correctamente cuando el contenedor se ejecute.
-CMD ["/bin/bash", "-c", "source venv/bin/activate && exec uvicorn main:app --host 0.0.0.0 --port 8000"]
+# Comando para correr la aplicación utilizando el entorno virtual
+CMD ["/app/venv/bin/uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
