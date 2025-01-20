@@ -24,5 +24,5 @@ RUN . venv/bin/activate && pip install -r requirements.txt && pip install sentry
 # Expone el puerto donde correrá la aplicación
 EXPOSE 8000
 
-# Comando para ejecutar la aplicación
-CMD ["sh", "-c", ". venv/bin/activate && uvicorn main:app --host 0.0.0.0 --port 8000"]
+# Cambia CMD para garantizar que el entorno virtual se active correctamente cuando el contenedor se ejecute.
+CMD ["/bin/bash", "-c", "source venv/bin/activate && exec uvicorn main:app --host 0.0.0.0 --port 8000"]

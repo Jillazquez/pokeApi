@@ -1,56 +1,56 @@
 pipeline {
-    agent any  // Utiliza cualquier nodo de Jenkins disponible
+    agent any  // Usar cualquier agente disponible de Jenkins
     
     environment {
-        DOCKER_IMAGE = 'pokeapi-app:latest'  // Define el nombre de la imagen Docker
-        CONTAINER_NAME = 'pokeapi-container'  // Nombre del contenedor para referencia
+        DOCKER_IMAGE = 'pokeapi-app:latest'  // Nombre para la imagen Docker
+        CONTAINER_NAME = 'pokeapi-container'  // Nombre para el contenedor Docker
     }
 
     stages {
+        // 1. Checkout: Obtener el código del repositorio
         stage('Checkout') {
             steps {
-                // Realiza el checkout del repositorio de GitHub
-                git url: 'https://github.com/Jillazquez/pokeApi.git', branch: 'main'
+                git url: 'https://github.com/Jillazquez/pokeApi.git', branch: 'main'  // Clonar el repositorio
             }
         }
 
+        // 2. Build Docker Image: Crear la imagen Docker con el Dockerfile
         stage('Build Docker Image') {
             steps {
                 script {
-                    // Construir la imagen Docker
                     echo 'Building Docker image...'
-                    sh 'docker build -t $DOCKER_IMAGE .'
+                    sh 'docker build -t $DOCKER_IMAGE .'  // Construir imagen
                 }
             }
         }
 
+        // 3. Run Docker Container: Ejecutar el contenedor con la imagen construida
         stage('Run Docker Container') {
             steps {
                 script {
-                    // Ejecutar el contenedor Docker en segundo plano
                     echo 'Running Docker container...'
-                    sh 'docker run -d --name $CONTAINER_NAME -p 8000:8000 $DOCKER_IMAGE'
+                    sh 'docker run -d --name $CONTAINER_NAME -p 8000:8000 $DOCKER_IMAGE'  // Iniciar contenedor
                 }
             }
         }
 
+        // 4. Run Tests: Ejecutar los tests en el contenedor
         stage('Run Pytest') {
             steps {
                 script {
-                    // Ejecutar pytest en el contenedor Docker. Asumimos que los tests están en el directorio tests/
                     echo 'Running Pytest...'
-                    sh 'docker exec $CONTAINER_NAME pytest tests/'
+                    sh 'docker exec $CONTAINER_NAME pytest tests/'  // Ejecutar pytest
                 }
             }
         }
 
+        // 5. Stop Docker Container: Detener y remover el contenedor
         stage('Stop Docker Container') {
             steps {
                 script {
-                    // Detener y remover el contenedor Docker después de ejecutar los tests
                     echo 'Stopping Docker container...'
-                    sh 'docker stop $CONTAINER_NAME'
-                    sh 'docker rm $CONTAINER_NAME'
+                    sh 'docker stop $CONTAINER_NAME'  // Detener contenedor
+                    sh 'docker rm $CONTAINER_NAME'  // Remover contenedor
                 }
             }
         }
@@ -58,17 +58,14 @@ pipeline {
 
     post {
         always {
-            // Limpiar los contenedores Docker y las imágenes después de la ejecución
             echo 'Cleaning up Docker containers and images...'
-            sh 'docker system prune -f'
+            sh 'docker system prune -f'  // Limpiar imágenes no usadas
         }
         success {
-            // Si todo es exitoso, puedes agregar alguna notificación o mensaje
-            echo 'Pipeline completed successfully.'
+            echo 'Pipeline completed successfully.'  // Si la ejecución es exitosa
         }
         failure {
-            // Si algo falla, muestra el error
-            echo 'There was an issue with the pipeline.'
+            echo 'There was an issue with the pipeline.'  // Si ocurre algún error
         }
     }
 }
