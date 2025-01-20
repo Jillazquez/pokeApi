@@ -2,8 +2,8 @@ pipeline {
     agent any  // Utiliza cualquier nodo de Jenkins disponible
     
     environment {
-        DOCKER_IMAGE = 'pokeapi:latest'  // Define el nombre de la imagen Docker
-        CONTAINER_NAME = 'pokeapi_container'  // Nombre del contenedor para referencia
+        DOCKER_IMAGE = 'pokeapi-app:latest'  // Define el nombre de la imagen Docker
+        CONTAINER_NAME = 'pokeapi-container'  // Nombre del contenedor para referencia
     }
 
     stages {
