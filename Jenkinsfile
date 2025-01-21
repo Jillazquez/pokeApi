@@ -43,24 +43,9 @@ pipeline {
                 }
             }
         }
-
-        // 5. Stop Docker Container: Detener y remover el contenedor
-        stage('Stop Docker Container') {
-            steps {
-                script {
-                    echo 'Stopping Docker container...'
-                    sh 'docker stop $CONTAINER_NAME'  // Detener contenedor
-                    sh 'docker rm $CONTAINER_NAME'  // Remover contenedor
-                }
-            }
-        }
     }
 
     post {
-        always {
-            echo 'Cleaning up Docker containers and images...'
-            sh 'docker system prune -f'  // Limpiar imágenes no usadas
-        }
         success {
             echo 'Pipeline completed successfully.'  // Si la ejecución es exitosa
         }
