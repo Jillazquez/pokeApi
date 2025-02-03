@@ -1,6 +1,8 @@
 import requests
 from typing import List
 from utils.Logger import Logger
+import redis
+from utils.redis_client import connect_to_redis  # Importar la función de conexión Redis
 
 type_to_id = {
     "normal": 1,
@@ -23,35 +25,56 @@ type_to_id = {
     "fairy": 18
 }
 
-def fetch_pokemons_by_type(type_name: str) -> List[str]:
+def fetch_pokemons_by_type(type_name: str, redis_client: redis.Redis) -> List[str]:
     """Obtiene Pokémon por tipo, usando el nombre del tipo."""
     type_id = type_to_id.get(type_name.lower())
     if not type_id:
         return []
+
+    # Cache key for Redis
+    cache_key = f"pokemons:type:{type_name.lower()}"
+    cached_data = redis_client.get(cache_key)
+
+    if cached_data:
+        # Si está en caché, devolver directamente la lista
+        return cached_data.decode("utf-8").split(",")  # Decodificar y convertir a lista
 
     url = f"https://pokeapi.co/api/v2/type/{type_id}"
     try:
         response = requests.get(url)
         response.raise_for_status()
         data = response.json()
-        return [pokemon["pokemon"]["name"] for pokemon in data["pokemon"]]
+        pokemon_names = [pokemon["pokemon"]["name"] for pokemon in data["pokemon"]]
+
+        # Almacenar el resultado en Redis con un tiempo de expiración de 24 horas
+        redis_client.set(cache_key, ",".join(pokemon_names), ex=86400)
+
+        return pokemon_names
     except Exception as e:
         logger = Logger()
         logger.add_to_log("error", f"Error al obtener Pokémon del tipo {type_name}: {e}")
         return []
 
-def fetch_water_pokemons(water_url: str) -> List[str]:
-    """Obtiene Pokémon de tipo agua desde una URL dada."""
-    return fetch_pokemons_by_type("water")
-
-def fetch_pokemon_by_id(pokemon_id: int) -> str:
+def fetch_pokemon_by_id(pokemon_id: int, redis_client: redis.Redis) -> str:
     """Obtiene un Pokémon por su número (ID)."""
+    cache_key = f"pokemon:id:{pokemon_id}"
+
+    # Verificar si está en caché
+    cached_data = redis_client.get(cache_key)
+    if cached_data:
+        return cached_data.decode("utf-8")
+
     url = f"https://pokeapi.co/api/v2/pokemon/{pokemon_id}/"
     try:
         response = requests.get(url)
         response.raise_for_status()
         data = response.json()
-        return data["name"]
+        pokemon_name = data["name"]
+
+        # Almacenar en Redis
+        redis_client.set(cache_key, pokemon_name, ex=86400)
+
+        return pokemon_name
     except Exception as e:
         logger = Logger()
         logger.add_to_log("error", f"Error al obtener el Pokémon con ID {pokemon_id}: {e}")
