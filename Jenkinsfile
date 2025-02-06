@@ -24,12 +24,12 @@ pipeline {
             }
         }
 
-        // 3. Run Docker Container: Ejecutar el contenedor con la imagen construida
-        stage('Run Docker Container') {
+        // 3. Run Docker Compose: Levantar tanto la aplicación como Redis
+        stage('Run Docker Compose') {
             steps {
                 script {
-                    echo 'Running Docker container...'
-                    sh 'docker run -d --name $CONTAINER_NAME -p 8000:8000 $DOCKER_IMAGE'  // Iniciar contenedor
+                    echo 'Running Docker Compose...'
+                    sh 'docker-compose up -d'  // Levantar los servicios en segundo plano
                 }
             }
         }
@@ -37,9 +37,9 @@ pipeline {
         // 4. Run Tests: Ejecutar los tests en el contenedor
         stage('Run Pytest') {
             steps {
-            script {
-            echo 'Running Pytest...'
-            sh 'docker exec pokeapi-container /app/venv/bin/pytest tests/'
+                script {
+                    echo 'Running Pytest...'
+                    sh 'docker exec pokeapi-container /app/venv/bin/pytest tests/'  // Ejecutar tests en el contenedor
                 }
             }
         }
