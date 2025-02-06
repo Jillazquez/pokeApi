@@ -23,9 +23,12 @@ async def get_pokemon_by_id(id: int):
 
 @router.get("/type/{type_name}", response_model=List[Pokemon])
 async def get_pokemon_by_type(type_name: str):
-    """Obtiene Pokémon por su tipo."""
+    """Obtiene Pokémons de tipo agua y el añadido."""
+    water_pokemons = fetch_water_pokemons()
     pokemons = fetch_pokemons_by_type(type_name)
-    if not pokemons:
+    comunes = list(set(water_pokemons) & set(pokemons))
+    if not comunes:
         logger.add_to_log("error", f"No se encontraron Pokémon del tipo {type_name}")  # Log de error
         raise HTTPException(status_code=404, detail=f"No se encontraron Pokémon del tipo {type_name}")
-    return [Pokemon(name=name) for name in pokemons]
+    return [Pokemon(name=name) for name in comunes]
+
