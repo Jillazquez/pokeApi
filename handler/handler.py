@@ -4,7 +4,6 @@ import redis
 from typing import List
 from utils.Logger import Logger
 
-# Conectar a Redis (asumimos que el servidor Redis está en "localhost" o en el contenedor "redis")
 redis_host = os.getenv("REDIS_HOST", "localhost")
 redis_client = redis.Redis(host=redis_host, port=6379, db=0, decode_responses=True)
 
@@ -36,10 +35,10 @@ def fetch_pokemons_by_type(type_name: str) -> List[str]:
     if not type_id:
         return []
 
-    # Primero, intenta obtener los datos de Redis
+    # First check if the data is in Redis
     cached_data = redis_client.get(type_name)
     if cached_data:
-        # Si los datos están en cache, devolverlos
+        # if exists return the cached data
         return cached_data.split(',')
 
     url = f"https://pokeapi.co/api/v2/type/{type_id}"
@@ -49,8 +48,8 @@ def fetch_pokemons_by_type(type_name: str) -> List[str]:
         data = response.json()
         pokemons = [pokemon["pokemon"]["name"] for pokemon in data["pokemon"]]
         
-        # Guardar los resultados en Redis para futuras consultas
-        redis_client.setex(type_name, 3600, ','.join(pokemons))  # Guarda los datos durante 1 hora (3600 segundos)
+        # save response in redis for future queries
+        redis_client.setex(type_name, 3600, ','.join(pokemons)) 
         
         return pokemons
     except Exception as e:
@@ -65,10 +64,18 @@ def fetch_water_pokemons() -> List[str]:
 def fetch_pokemon_by_id(pokemon_id: int) -> str:
     """Obtiene un Pokémon por su número (ID)."""
     url = f"https://pokeapi.co/api/v2/pokemon/{pokemon_id}/"
+
+    # Try to get the pokemon name from redis
+    cached_data = redis_client.get(str(pokemon_id))
+    if cached_data:
+        return cached_data
     try:
         response = requests.get(url)
         response.raise_for_status()
         data = response.json()
+
+        # Save the result in Redis for future queries
+        redis_client.setex(str(pokemon_id), 3600, data["name"])
         return data["name"]
     except Exception as e:
         logger = Logger()
