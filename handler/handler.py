@@ -40,7 +40,7 @@ def fetch_pokemons_by_type(type_name: str) -> List[str]:
         logger.add_to_log("error", f"Error al obtener Pokémon del tipo {type_name}: {e}")
         return []
 
-def fetch_water_pokemons(water_url: str) -> List[str]:
+def fetch_water_pokemons() -> List[str]:
     """Obtiene Pokémon de tipo agua desde una URL dada."""
     return fetch_pokemons_by_type("water")
 
