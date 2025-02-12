@@ -5,6 +5,7 @@ from handler.handler import (
     fetch_pokemon_by_id,
     fetch_pokemons_by_type,
 )
+import sentry_sdk
 from models.response import Pokemon  # Asegúrate de que el modelo Pokemon esté bien definido
 from utils.Logger import Logger  # Ajusté la importación del Logger
 
@@ -32,3 +33,11 @@ async def get_pokemon_by_type(type_name: str):
         raise HTTPException(status_code=404, detail=f"No se encontraron Pokémon del tipo {type_name}")
     return [Pokemon(name=name) for name in comunes]
 
+@router.get("/error")
+async def error():
+    """Ruta para probar Sentry con un error intencional."""
+    try:
+        raise Exception("¡Error intencional para probar Sentry!")
+    except Exception as e:
+        sentry_sdk.capture_exception(e)  # Captura el error en Sentry
+        raise HTTPException(status_code=500, detail="Error interno del servidor")
