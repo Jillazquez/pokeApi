@@ -25,13 +25,31 @@ async def get_pokemon_by_id(id: int):
 @router.get("/type/{type_name}", response_model=List[Pokemon])
 async def get_pokemon_by_type(type_name: str):
     """Obtiene Pokémons de tipo agua y el añadido."""
-    water_pokemons = fetch_water_pokemons()
-    pokemons = fetch_pokemons_by_type(type_name)
-    comunes = list(set(water_pokemons) & set(pokemons))
-    if not comunes:
-        logger.add_to_log("error", f"No se encontraron Pokémon del tipo {type_name}")  # Log de error
-        raise HTTPException(status_code=404, detail=f"No se encontraron Pokémon del tipo {type_name}")
-    return [Pokemon(name=name) for name in comunes]
+    try:
+        # Llamadas a las funciones para obtener los pokémons
+        water_pokemons = fetch_water_pokemons()
+        pokemons = fetch_pokemons_by_type(type_name)
+
+        # Encuentra los pokémons comunes
+        comunes = list(set(water_pokemons) & set(pokemons))
+
+        # Si no hay pokémons comunes, genera un error y lo loggea
+        if not comunes:
+            error_message = f"No se encontraron Pokémon del tipo {type_name}"
+            logger.add_to_log("error", error_message)  # Log de error
+            sentry_sdk.capture_message(error_message)  # Enviar mensaje a Sentry
+            raise HTTPException(status_code=404, detail=error_message)
+
+        # Si todo está bien, devuelve los Pokémon comunes
+        return [Pokemon(name=name) for name in comunes]
+    
+    except Exception as e:
+        # Capturar cualquier otro error y enviarlo a Sentry
+        sentry_sdk.capture_exception(e)  # Captura el error en Sentry
+        # Agregar el error al log
+        logger.add_to_log("error", f"Error al obtener Pokimon del tipo {type_name}: {e}")
+        # Vuelve a lanzar la excepción para que se maneje correctamente por FastAPI
+        raise HTTPException(status_code=500, detail="Error interno al procesar la solicitud")
 
 @router.get("/error")
 async def error():
