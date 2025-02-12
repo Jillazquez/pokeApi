@@ -51,11 +51,11 @@ async def get_pokemon_by_type(type_name: str):
         # Vuelve a lanzar la excepción para que se maneje correctamente por FastAPI
         raise HTTPException(status_code=500, detail="Error interno al procesar la solicitud")
 
-@router.get("/error")
-async def error():
-    """Ruta para probar Sentry con un error intencional."""
-    try:
-        raise Exception("¡Error intencional para probar Sentry!")
-    except Exception as e:
-        sentry_sdk.capture_exception(e)  # Captura el error en Sentry
-        raise HTTPException(status_code=500, detail="Error interno del servidor")
+
+@app.get("/sentry-debug")
+async def trigger_error():
+    division_by_zero = 1 / 0
+
+@router.get("/bug")
+async def trigger_error():
+    division_by_zero = 1 / 0
