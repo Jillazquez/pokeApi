@@ -13,6 +13,16 @@ logger = Logger()  # Crea una instancia del logger
 
 router = APIRouter()
 
+# Configura Sentry con la DSN proporcionada
+sentry_sdk.init(
+    dsn="https://7be9ca90ec906575e54116a2e5f31373@o4508807627735040.ingest.de.sentry.io/4508807629701200",
+    send_default_pii=True,  # Enviar información del usuario (si aplica)
+    traces_sample_rate=1.0,  # Captura el 100% de las transacciones
+    _experiments={
+        "continuous_profiling_auto_start": True,  # Habilita el profiling automático
+    },
+)
+
 @router.get("/pokemon/{id}", response_model=Pokemon)
 async def get_pokemon_by_id(id: int):
     """Obtiene un Pokémon por su número (ID)."""
