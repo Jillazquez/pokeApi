@@ -1,11 +1,12 @@
 from fastapi import FastAPI
-from view.view import router
-from utils.Logger import Logger
-logger = Logger()
+from view import router  # Importa el router con las rutas definidas
 
-logger.add_to_log("info", "La aplicación FastAPI ha comenzado correctamente.")
+app = FastAPI()
 
-app = FastAPI(title="Pokémon API")
-
-# Registrar las rutas desde el router
+# Registra el router con las rutas definidas
 app.include_router(router)
+
+# Asegúrate de que FastAPI está ejecutándose correctamente
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)

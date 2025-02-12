@@ -1,16 +1,13 @@
 from fastapi import APIRouter, HTTPException
 from typing import List
-from handler.handler import (
-    fetch_water_pokemons,
-    fetch_pokemon_by_id,
-    fetch_pokemons_by_type,
-)
 import sentry_sdk
 from models.response import Pokemon  # Asegúrate de que el modelo Pokemon esté bien definido
-from utils.Logger import Logger  # Ajusté la importación del Logger
+from utils.Logger import Logger  # Logger para agregar logs
 
-logger = Logger()  # Crea una instancia del logger
+# Inicializa el logger
+logger = Logger()
 
+# Inicializa el router de FastAPI
 router = APIRouter()
 
 # Configura Sentry con la DSN proporcionada
@@ -23,6 +20,7 @@ sentry_sdk.init(
     },
 )
 
+# Ruta para obtener Pokémon por ID
 @router.get("/pokemon/{id}", response_model=Pokemon)
 async def get_pokemon_by_id(id: int):
     """Obtiene un Pokémon por su número (ID)."""
@@ -32,6 +30,7 @@ async def get_pokemon_by_id(id: int):
         raise HTTPException(status_code=404, detail="Pokémon no encontrado")
     return Pokemon(name=pokemon)
 
+# Ruta para obtener Pokémon por tipo
 @router.get("/type/{type_name}", response_model=List[Pokemon])
 async def get_pokemon_by_type(type_name: str):
     """Obtiene Pokémons de tipo agua y el añadido."""
@@ -61,11 +60,8 @@ async def get_pokemon_by_type(type_name: str):
         # Vuelve a lanzar la excepción para que se maneje correctamente por FastAPI
         raise HTTPException(status_code=500, detail="Error interno al procesar la solicitud")
 
-
-@app.get("/sentry-debug")
+# Ruta para probar un error intencional y capturarlo en Sentry
+@router.get("/sentry-debug")
 async def trigger_error():
-    division_by_zero = 1 / 0
-
-@router.get("/bug")
-async def trigger_error():
+    """Ruta para probar un error y capturarlo en Sentry."""
     division_by_zero = 1 / 0
