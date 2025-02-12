@@ -77,3 +77,9 @@ def fetch_pokemon_by_id(pokemon_id: int) -> str:
         logger.add_to_log("error", f"Error al obtener el Pokémon con ID {pokemon_id}: {e}")
         sentry_sdk.capture_exception(e)  # Captura errores en Sentry
         return ""
+
+def example():
+    return "Esto esta actualizado"
+
+def explota():
+    return 1/0

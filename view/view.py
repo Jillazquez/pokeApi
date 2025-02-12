@@ -3,6 +3,13 @@ from typing import List
 import sentry_sdk
 from models.response import Pokemon  # Asegúrate de que el modelo Pokemon esté bien definido
 from utils.Logger import Logger  # Logger para agregar logs
+from handler.handler import (
+    fetch_water_pokemons,
+    fetch_pokemon_by_id,
+    fetch_pokemons_by_type,
+    explota,
+    example
+)
 
 # Inicializa el logger
 logger = Logger()
@@ -65,3 +72,11 @@ async def get_pokemon_by_type(type_name: str):
 async def trigger_error():
     """Ruta para probar un error y capturarlo en Sentry."""
     division_by_zero = 1 / 0
+
+@router.get("/example")
+async def examplefun():
+    example()
+
+@router.get("/explota")
+async def explotafun():
+    explota()
