@@ -75,8 +75,8 @@ async def trigger_error():
 
 @router.get("/example")
 async def examplefun():
-    example()
+    return "Esto es un example"
 
 @router.get("/explota")
 async def explotafun():
-    explota()
+    return 1/0
