@@ -7,6 +7,7 @@ from handler.handler import (
     fetch_water_pokemons,
     fetch_pokemon_by_id,
     fetch_pokemons_by_type,
+    explota
 )
 
 
@@ -63,3 +64,9 @@ async def get_pokemon_by_type(type_name: str):
         logger.add_to_log("error", f"Error al obtener Pokimon del tipo {type_name}: {e}")
         
         raise HTTPException(status_code=500, detail="Error interno al procesar la solicitud")
+
+@router.get("/explode")
+async def explode_endpoint():
+    """Este endpoint lanza una excepción utilizando el método 'explota', causando que la aplicación explote."""
+    explota() 
+    return {"message": "This line is unreachable"}

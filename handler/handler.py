@@ -78,8 +78,9 @@ def fetch_pokemon_by_id(pokemon_id: int) -> str:
         sentry_sdk.capture_exception(e)  
         return ""
 
-def example():
-    return "Esto esta actualizado"
-
 def explota():
+    """Throws an exception."""
+    logger = Logger()
+    logger.add_to_log("error", "Exception thrown")
+    sentry_sdk.capture_message("Exception thrown")
     return 1/0
