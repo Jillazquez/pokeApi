@@ -6,8 +6,7 @@ This project is a FastAPI-based application that interacts with the PokéAPI. It
 
 ## Installation & Setup
 
-<details>
-  <summary><b>Setting Up the Environment</b></summary>
+### Setting Up the Environment
 
 1. **Clone the repository:**
    ```bash
@@ -18,49 +17,93 @@ This project is a FastAPI-based application that interacts with the PokéAPI. It
 2. **Create and activate a virtual environment:**
    ```bash
    python3 -m venv venv
-   source venv/bin/activate  # On Windows: `venv\Scripts\activate`
+   source venv/bin/activate  # On Windows: `venv\Scriptsctivate`
    ```
 
 3. **Install dependencies:**
    ```bash
    pip install -r requirements.txt
    ```
-</details>
+
+### Installing Required Tools
+
+#### Install FastAPI and Uvicorn
+```bash
+pip install fastapi uvicorn
+```
+
+#### Install Redis
+On Ubuntu:
+```bash
+sudo apt update && sudo apt install redis-server
+```
+Start Redis:
+```bash
+sudo systemctl start redis
+```
+
+#### Install Docker
+On Ubuntu:
+```bash
+sudo apt update
+sudo apt install docker.io
+```
+Verify installation:
+```bash
+docker --version
+```
+
+#### Install Docker Compose
+```bash
+sudo apt install docker-compose
+```
+Verify installation:
+```bash
+docker-compose --version
+```
+
+#### Install Jenkins
+```bash
+wget -q -O - https://pkg.jenkins.io/debian/jenkins.io.key | sudo apt-key add -
+```
+```bash
+sudo sh -c 'echo deb http://pkg.jenkins.io/debian-stable binary/ > /etc/apt/sources.list.d/jenkins.list'
+```
+```bash
+sudo apt update && sudo apt install jenkins
+```
+Start Jenkins:
+```bash
+sudo systemctl start jenkins
+```
 
 ## Usage
 
-<details>
-  <summary><b>Running the Application</b></summary>
+### Running the Application
 
-To start the application, run on jenkins:
+To start the application, run on Jenkins:
 ```bash
 uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 ```
 The API will be available at `http://localhost:8000`.
-</details>
 
-<details>
-  <summary><b>Endpoints</b></summary>
+### Endpoints
 
 - `GET /pokemon/{name}` - Fetches Pokémon data.
 - `GET /cached-pokemon/{name}` - Fetches Pokémon data with Redis caching.
-</details>
 
 ## Testing
 
-<details>
-  <summary><b>Running Unit Tests</b></summary>
+### Running Unit Tests
 
 This project uses `pytest` for testing. To run the tests, execute:
 ```bash
 pytest tests/
 ```
-</details>
 
 ## Deployment
 
-<details>
-  <summary><b>Jenkins & Docker Deployment</b></summary>
+### Jenkins & Docker Deployment
 
 The application is deployed using Jenkins, which manages two containers:
 
@@ -68,16 +111,14 @@ The application is deployed using Jenkins, which manages two containers:
 - **Redis Container** - Stores cached responses.
 
 To build and deploy, use Jenkins with a `Dockerfile` and `docker-compose.yml`.
-</details>
 
 ## Architecture
 
-<details>
-  <summary><b>Technology Stack</b></summary>
+### Technology Stack
 
 - **FastAPI** - High-performance Python web framework.
 - **Redis** - Used for caching API responses.
 - **Pytest** - Testing framework.
 - **Jenkins** - Continuous integration and deployment.
-- **Sentry** - Catch errors while using the proyect.
-</details>
+- **Sentry** - Catch errors while using the project.
+- **Docker & Docker Compose** - Containerized deployment.
