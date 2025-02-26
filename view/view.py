@@ -7,8 +7,6 @@ from handler.handler import (
     fetch_water_pokemons,
     fetch_pokemon_by_id,
     fetch_pokemons_by_type,
-    explota,
-    example
 )
 
 
@@ -65,18 +63,3 @@ async def get_pokemon_by_type(type_name: str):
         logger.add_to_log("error", f"Error al obtener Pokimon del tipo {type_name}: {e}")
         
         raise HTTPException(status_code=500, detail="Error interno al procesar la solicitud")
-
-# ruta para combrobar que el sentry funciona
-@router.get("/explota")
-async def explota():
-    return 1/0
-
-# ruta para comprobar que el sentry funciona
-@router.get("/example")
-async def example():
-    return 1/0
-
-#ruta para comprobar que todo funciona
-@router.get("/ping")
-async def ping():
-    return {"ping": "pong"}
