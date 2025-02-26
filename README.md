@@ -32,7 +32,7 @@ This project is a FastAPI-based application that interacts with the PokéAPI. It
 <details>
   <summary><b>Running the Application</b></summary>
 
-To start the application, run:
+To start the application, run on jenkins:
 ```bash
 uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 ```
