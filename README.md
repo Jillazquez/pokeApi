@@ -79,4 +79,5 @@ To build and deploy, use Jenkins with a `Dockerfile` and `docker-compose.yml`.
 - **Redis** - Used for caching API responses.
 - **Pytest** - Testing framework.
 - **Jenkins** - Continuous integration and deployment.
+- **Sentry** - Catch errors while using the proyect.
 </details>
