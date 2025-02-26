@@ -5,30 +5,30 @@ import redis
 from typing import List
 from utils.Logger import Logger
 
-# Configura Sentry con la DSN proporcionada
+
 sentry_sdk.init(
     dsn="https://7be9ca90ec906575e54116a2e5f31373@o4508807627735040.ingest.de.sentry.io/4508807629701200",
-    send_default_pii=True,  # Enviar información del usuario (si aplica)
-    traces_sample_rate=1.0,  # Captura el 100% de las transacciones
+    send_default_pii=True,  
+    traces_sample_rate=1.0,  
     _experiments={
-        "continuous_profiling_auto_start": True,  # Habilita el profiling automático
+        "continuous_profiling_auto_start": True,  
     },
 )
 
-# Configuración de Redis
+
 redis_host = os.getenv("REDIS_HOST", "localhost")
 redis_client = redis.Redis(host=redis_host, port=6379, db=0, decode_responses=True)
 
-# Diccionario para mapear el tipo de Pokémon a su ID
+
 type_to_id = {
     "normal": 1, "fighting": 2, "flying": 3, "poison": 4, "ground": 5, "rock": 6,
     "bug": 7, "ghost": 8, "steel": 9, "fire": 10, "water": 11, "grass": 12,
     "electric": 13, "psychic": 14, "ice": 15, "dragon": 16, "dark": 17, "fairy": 18
 }
 
-# Función para obtener los Pokémon por tipo
+
 def fetch_pokemons_by_type(type_name: str) -> List[str]:
-    """Obtiene Pokémon por tipo, usando el nombre del tipo."""
+    """Get a pokemon list with a type."""
     type_id = type_to_id.get(type_name.lower(), None)
     if not type_id:
         return []
@@ -44,22 +44,22 @@ def fetch_pokemons_by_type(type_name: str) -> List[str]:
         data = response.json()
         pokemons = [pokemon["pokemon"]["name"] for pokemon in data["pokemon"]]
 
-        redis_client.setex(type_name, 3600, ','.join(pokemons))  # Guarda los resultados en caché
+        redis_client.setex(type_name, 3600, ','.join(pokemons))  
         return pokemons
     except Exception as e:
         logger = Logger()
-        logger.add_to_log("error", f"Error al obtener Pokémon del tipo {type_name}: {e}")
-        sentry_sdk.capture_exception(e)  # Captura errores en Sentry
+        logger.add_to_log("error", f"Error obtaining  {type_name} type pokemons: {e}")
+        sentry_sdk.capture_exception(e)  
         return []
 
-# Función para obtener los Pokémon de tipo agua
+
 def fetch_water_pokemons() -> List[str]:
-    """Obtiene Pokémon de tipo agua desde una URL dada."""
+    """Get water type pokemons"""
     return fetch_pokemons_by_type("water")
 
-# Función para obtener un Pokémon por su ID
+
 def fetch_pokemon_by_id(pokemon_id: int) -> str:
-    """Obtiene un Pokémon por su número (ID)."""
+    """Get pokemon with ID."""
     url = f"https://pokeapi.co/api/v2/pokemon/{pokemon_id}/"
 
     cached_data = redis_client.get(str(pokemon_id))
@@ -70,12 +70,12 @@ def fetch_pokemon_by_id(pokemon_id: int) -> str:
         response.raise_for_status()
         data = response.json()
 
-        redis_client.setex(str(pokemon_id), 3600, data["name"])  # Guarda en caché
+        redis_client.setex(str(pokemon_id), 3600, data["name"]) 
         return data["name"]
     except Exception as e:
         logger = Logger()
-        logger.add_to_log("error", f"Error al obtener el Pokémon con ID {pokemon_id}: {e}")
-        sentry_sdk.capture_exception(e)  # Captura errores en Sentry
+        logger.add_to_log("error", f"Error obtaining pokemon with id {pokemon_id}: {e}")
+        sentry_sdk.capture_exception(e)  
         return ""
 
 def example():
